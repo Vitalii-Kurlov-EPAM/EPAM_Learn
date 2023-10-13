@@ -1,0 +1,63 @@
+﻿using FluentValidation.AspNetCore;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Module_02.Task_01.CartingService.WebApi.ActionFilters;
+using Module_02.Task_01.CartingService.WebApi.DAL.DbContext;
+using Module_02.Task_01.CartingService.WebApi.Models;
+using Сommon.DB;
+using Сommon.DB.Abstractions;
+
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+    
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(options => { options.CustomSchemaIds(type => type.FullName?.Split('.').Last().Replace("+", ".")); });
+
+
+services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+    options.SuppressMapClientErrors = true;
+});
+
+services.Configure<MvcOptions>(options =>
+{
+    options.Filters.Add(typeof(ModelValidationActionFilter));
+    options.Filters.Add(typeof(ExceptionHandlerActionFilter));
+});
+
+services.AddSingleton<IDbConnectionSettings>(_ => new DbConnectionSettings
+{
+    ConnectionString = builder.Configuration.GetConnectionString("lite-db-connection")
+});
+
+services.AddFluentValidationAutoValidation(configuration =>
+{
+    configuration.DisableDataAnnotationsValidation = false;
+});
+services.AddFluentValidationClientsideAdapters();
+
+services.AddValidatorsFromAssemblyContaining<ErrorModelResponse>(ServiceLifetime.Scoped);
+
+services.AddMediatR(configuration =>
+{
+    configuration.RegisterServicesFromAssemblyContaining<IDbContext>();
+});
+
+
+services.AddScoped<IDbContext, DbContext>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
