@@ -1,16 +1,22 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.DB.DatabaseContext;
 using Module_02.Task_02.CatalogService.Abstractions.DB.Exceptions;
+using Module_02.Task_02.CatalogService.Abstractions.Services.MessageProducers;
 using Module_02.Task_02.CatalogService.BLL.CQRS.Base;
+using Module_02.Task_02.CatalogService.BLL.ModelExtensions;
+using Module_02.Task_02.CatalogService.BLL.Static;
 
 namespace Module_02.Task_02.CatalogService.BLL.CQRS.ProductObject.CommandHandlers;
 
-public sealed class DeleteProductByIdCommandHandler : BaseCommandHandler,
+public sealed class DeleteProductByIdCommandHandler : BaseEntityModificationCommandHandler,
     IRequestHandler<DeleteProductByIdCommand, bool>
 {
-    public DeleteProductByIdCommandHandler(IWithModificationsDbContext dbContext)
-        : base(dbContext)
+    public DeleteProductByIdCommandHandler(IWithModificationsDbContext dbContext, 
+        ILogger<DeleteProductByIdCommandHandler> logger,
+        IEntityMessageProducer entityMessageProducer)
+        : base(dbContext, logger, entityMessageProducer)
     {
     }
 
@@ -32,6 +38,11 @@ public sealed class DeleteProductByIdCommandHandler : BaseCommandHandler,
         }
 
         var affectedCount = await DbContext.SaveChangesAsync(cancellationToken);
+
+        if (affectedCount > 0)
+        {
+            EntityMessageProducer.PublishEntityDeleted(foundProduct.ToProductMessage(), EntityName.PRODUCT);
+        }
 
         return affectedCount > 0;
     }

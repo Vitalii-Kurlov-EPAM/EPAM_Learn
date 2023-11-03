@@ -72,6 +72,11 @@ public class ProductRepository : BaseRepository, IProductRepository
         return await DbSet.AnyAsync(entity => entity.Name == name, cancellationToken);
     }
 
+    public async Task<bool> IsExistByNameAsync(string name, int ignoreProductId, CancellationToken cancellationToken = default)
+    {
+        return await DbSet.AnyAsync(entity => entity.Name == name && entity.ProductId != ignoreProductId, cancellationToken);
+    }
+
     public Task<PagedResult<ProductEntity>> GetProductsByCategoryAsync(int categoryId, int page = 1, int pageSize = 10, bool includeDeps = false, CancellationToken cancellationToken = default)
     {
         IQueryable<ProductEntity> dbSet = includeDeps

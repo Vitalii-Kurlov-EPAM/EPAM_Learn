@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Queries;
 using Module_02.Task_02.CatalogService.Abstractions.DB;
@@ -11,8 +12,8 @@ namespace Module_02.Task_02.CatalogService.BLL.CQRS.ProductObject.QueryHandlers;
 public sealed class GetProductsByCategoryIdQueryHandler : BaseQueryHandler,
     IRequestHandler<GetProductsByCategoryIdQuery, PagedResult<ProductObjectModels.ItemModel>>
 {
-    public GetProductsByCategoryIdQueryHandler(IMediator mediator, IReadOnlyDbContext dbContext)
-        : base(mediator, dbContext)
+    public GetProductsByCategoryIdQueryHandler(IMediator mediator, IReadOnlyDbContext dbContext, ILogger<GetProductsByCategoryIdQueryHandler> logger)
+        : base(mediator, dbContext, logger)
     {
     }
 

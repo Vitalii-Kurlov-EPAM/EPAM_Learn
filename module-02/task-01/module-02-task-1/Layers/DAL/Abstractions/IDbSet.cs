@@ -14,4 +14,5 @@ public interface IDbSet<TEntity>
     bool Delete(TEntity value);
     bool Delete(object id);
     bool Update(TEntity value);
+    bool UpdateMany(TEntity[] values);
 }

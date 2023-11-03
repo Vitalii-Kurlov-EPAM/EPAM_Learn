@@ -39,12 +39,12 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
             return Ok(allCartItems.ToCartItemsResponseDto(cartId));
         }
 
-        [HttpGet("{cartId}/items/{cartItemId:int}")]
+        [HttpGet("{cartId}/items/{itemId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartItemResponse.ItemDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModelResponse))]
-        public async Task<IActionResult> GetById(string cartId, int cartItemId)
+        public async Task<IActionResult> GetById(string cartId, int itemId)
         {
-            var cartItem = await _mediator.Send(new GetCartItemByIdQuery(cartId, cartItemId, true));
+            var cartItem = await _mediator.Send(new GetCartItemByIdQuery(cartId, itemId, true));
             return cartItem == null
                 ? NotFound()
                 : Ok(cartItem.ToCartItemResponseDto());
@@ -60,12 +60,12 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
             return Ok(cartItem);
         }
 
-        [HttpDelete("{cartId}/items/{cartItemId:int}")]
+        [HttpDelete("{cartId}/items/{itemId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModelResponse))]
-        public async Task<IActionResult> Delete(string cartId, int cartItemId, [FromQuery, Required]int quantity)
+        public async Task<IActionResult> Delete(string cartId, int itemId, [FromQuery, Required]int quantity)
         {
-            var result = await _mediator.Send(new DeleteCartItemByIdCommand(cartId, cartItemId, quantity));
+            var result = await _mediator.Send(new DeleteCartItemByIdCommand(cartId, itemId, quantity));
             return result
                 ? Ok()
                 : NotFound();

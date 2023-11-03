@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\lib\MessageBroker.RabbitMq\MessageBroker.RabbitMq.csproj" />
     <ProjectReference Include="..\task-02.BLL\Task-02.CatalogService.BLL.csproj" />
     <ProjectReference Include="..\task-02.DAL\Task-02.CatalogService.DAL.csproj" />
   </ItemGroup>

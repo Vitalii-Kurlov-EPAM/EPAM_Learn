@@ -9,10 +9,16 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\task-02.Abstractions\Task-02.CatalogService.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ModelExtensions\" />
+    <Folder Include="Static\" />
   </ItemGroup>
 
 </Project>

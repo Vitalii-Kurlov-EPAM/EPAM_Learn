@@ -1,7 +1,10 @@
-﻿namespace Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.DB.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.DB.Entities
 {
     public class CartItemEntity
     {
+        [Key]
         public int CartItemId { get; set; }
 
         public string CartId { get; set; }

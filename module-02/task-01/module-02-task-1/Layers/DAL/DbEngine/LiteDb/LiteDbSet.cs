@@ -79,4 +79,9 @@ public class LiteDbSet<TEntity> : IDbSet<TEntity>
         var id = idProp.GetValue(value);
         return _currentCollection.Update(new BsonValue(id), value);
     }
+
+    public bool UpdateMany(TEntity[] values)
+    {
+        return _currentCollection.Update(values) == values.Length;
+    }
 }

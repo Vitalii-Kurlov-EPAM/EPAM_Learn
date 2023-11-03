@@ -66,12 +66,21 @@ public class CartItemRepository : BaseRepository, ICartItemRepository
         return itemsDbSet.Where(entity => entity.CartId == cartId);
     }
 
-    public CartItemEntity GetCartItem(string cartId, int cartItemId, bool includeDeps = false)
+    public CartItemEntity GetCartItem(string cartId, int itemId, bool includeDeps = false)
     {
         var itemsDbSet = includeDeps
             ? DbSet.Include(x => x.Image)
             : DbSet;
 
-        return itemsDbSet.Where(entity => entity.CartItemId == cartItemId && entity.CartId == cartId).FirstOrDefault();
+        return itemsDbSet.Where(entity => entity.CartId == cartId && entity.Id == itemId).FirstOrDefault();
+    }
+
+    public IEnumerable<CartItemEntity> GetAllCartItemsByItemId(int itemId, bool includeDeps = false)
+    {
+        var itemsDbSet = includeDeps
+            ? DbSet.Include(x => x.Image)
+            : DbSet;
+
+        return itemsDbSet.Where(entity => entity.Id == itemId);
     }
 }

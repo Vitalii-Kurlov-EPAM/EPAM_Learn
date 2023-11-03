@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject.Queries;
 using Module_02.Task_02.CatalogService.Abstractions.DB.DatabaseContext;
@@ -9,8 +10,8 @@ namespace Module_02.Task_02.CatalogService.BLL.CQRS.CategoryObject.QueryHandlers
 
 public sealed class GetAllCategoriesQueryHandler : BaseQueryHandler, IRequestHandler<GetAllCategoriesQuery, CategoryObjectModels.ItemModel[]>
 {
-    public GetAllCategoriesQueryHandler(IMediator mediator, IReadOnlyDbContext dbContext)
-        : base(mediator, dbContext)
+    public GetAllCategoriesQueryHandler(IMediator mediator, IReadOnlyDbContext dbContext, ILogger<GetAllCategoriesQueryHandler> logger)
+        : base(mediator, dbContext, logger)
     {
     }
 

@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Queries;
-using Module_02.Task_02.CatalogService.Abstractions.DB;
 using Module_02.Task_02.CatalogService.WebApi.MappingExtensions;
 using Module_02.Task_02.CatalogService.WebApi.Models;
 using Module_02.Task_02.CatalogService.WebApi.Models.Product;

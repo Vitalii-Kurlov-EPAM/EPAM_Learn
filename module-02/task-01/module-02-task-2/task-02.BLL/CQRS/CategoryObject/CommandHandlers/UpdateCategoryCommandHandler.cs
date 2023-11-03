@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.DB.DatabaseContext;
 using Module_02.Task_02.CatalogService.Abstractions.DB.Exceptions;
@@ -8,8 +9,8 @@ namespace Module_02.Task_02.CatalogService.BLL.CQRS.CategoryObject.CommandHandle
 
 public sealed class UpdateCategoryCommandHandler : BaseCommandHandler, IRequestHandler<UpdateCategoryCommand, bool>
 {
-    public UpdateCategoryCommandHandler(IWithModificationsDbContext dbContext)
-        : base(dbContext)
+    public UpdateCategoryCommandHandler(IWithModificationsDbContext dbContext, ILogger<UpdateCategoryCommandHandler> logger)
+        : base(dbContext, logger)
     {
     }
 

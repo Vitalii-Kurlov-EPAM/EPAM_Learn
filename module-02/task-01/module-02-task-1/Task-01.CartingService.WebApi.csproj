@@ -23,8 +23,6 @@
 		<Exec Command="del $(TargetDir).static\swagger\temp.txt /q" />
 	</Target>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	</Target>
 
   <ItemGroup>
     <Folder Include="Layers\DAL\Consts\" />
@@ -35,6 +33,12 @@
     <None Include=".static\swagger\temp.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\Common\Common.csproj" />
+    <ProjectReference Include="..\..\lib\MessageBroker.RabbitMq\MessageBroker.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\lib\MessageModels\MessageModels.csproj" />
   </ItemGroup>
 
 </Project>

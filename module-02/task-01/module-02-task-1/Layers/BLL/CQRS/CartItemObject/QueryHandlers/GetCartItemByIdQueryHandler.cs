@@ -17,7 +17,7 @@ public sealed class GetCartItemByIdQueryHandler : BaseQueryHandler,
 
     public Task<CartItemObjectModels.ItemModel> Handle(GetCartItemByIdQuery query, CancellationToken cancellationToken)
     {
-        var foundItem = DbContext.CartItemRepository.GetCartItem(query.CartId, query.CartItemId, query.IncludeDeps);
+        var foundItem = DbContext.CartItemRepository.GetCartItem(query.CartId, query.ItemId, query.IncludeDeps);
         return Task.FromResult(foundItem.ToCartItemModel());
     }
 }

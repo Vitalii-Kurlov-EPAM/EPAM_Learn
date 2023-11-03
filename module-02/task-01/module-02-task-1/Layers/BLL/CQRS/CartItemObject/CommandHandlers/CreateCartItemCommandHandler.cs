@@ -5,6 +5,7 @@ using Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.DB.Entities;
 using Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.Extensions.ModelMapping;
 using Module_02.Task_01.CartingService.WebApi.Layers.BLL.CQRS.Base;
 using Module_02.Task_01.CartingService.WebApi.Layers.DAL.Context;
+using Module_02.Task_01.CartingService.WebApi.Layers.DAL.Utils;
 
 namespace Module_02.Task_01.CartingService.WebApi.Layers.BLL.CQRS.CartItemObject.CommandHandlers;
 
@@ -16,47 +17,14 @@ public sealed class CreateCartItemCommandHandler : BaseCommandHandler,
     {
     }
 
-    private ImageEntity CreateImage(CreateCartItemCommand command)
-    {
-        var image = new ImageEntity
-        {
-            ImageId = 0,
-            Url = command.ImageUrl,
-            Alt = command.ImageAlt
-        };
-
-        DbContext.ImageRepository.Add(image);
-        return image;
-    }
-
     private CartItemObjectModels.ItemModel UpdateCartItemEntity(CartItemEntity entity, CreateCartItemCommand command)
     {
         entity.Name = command.Name;
         entity.Price = command.Price;
         entity.Quantity += command.Quantity;
 
-        if (string.IsNullOrEmpty(command.ImageUrl))
-        {
-            if (entity.Image != null)
-            {
-                DbContext.ImageRepository.Delete(entity.Image);
-                entity.Image = null;
-            }
-        }
-        else
-        {
-            if (entity.Image != null)
-            {
-                var image = DbContext.ImageRepository.GetById(entity.Image.ImageId);
-                image.Url = command.ImageUrl;
-                image.Alt = command.ImageAlt;
-                DbContext.ImageRepository.Update(image);
-            }
-            else
-            {
-                entity.Image = CreateImage(command);
-            }
-        }
+
+        DbContext.CreateOrUpdateImage(entity, command.ImageUrl, command.ImageAlt);
 
         DbContext.CartItemRepository.Update(entity);
 
@@ -69,7 +37,7 @@ public sealed class CreateCartItemCommandHandler : BaseCommandHandler,
 
         if (!string.IsNullOrWhiteSpace(command.ImageUrl))
         {
-            newImage = CreateImage(command);
+            newImage = DbContext.CreateImage(command.ImageUrl, command.ImageAlt);
         }
 
         var newCartItemEntity = command.ToCartItemEntity(newImage);
@@ -80,7 +48,7 @@ public sealed class CreateCartItemCommandHandler : BaseCommandHandler,
 
     public Task<CartItemObjectModels.ItemModel> Handle(CreateCartItemCommand command, CancellationToken cancellationToken)
     {
-        var foundCartItem = DbContext.CartItemRepository.GetById(command.Id, true);
+        var foundCartItem = DbContext.CartItemRepository.GetCartItem(command.CartId, command.Id, true);
 
         DbContext.BeginTransaction();
 

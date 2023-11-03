@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.DB.DatabaseContext;
 using Module_02.Task_02.CatalogService.Abstractions.DB.Exceptions;
@@ -9,8 +10,8 @@ namespace Module_02.Task_02.CatalogService.BLL.CQRS.CategoryObject.CommandHandle
 public sealed class DeleteCategoryByIdCommandHandler : BaseCommandHandler,
     IRequestHandler<DeleteCategoryByIdCommand, bool>
 {
-    public DeleteCategoryByIdCommandHandler(IWithModificationsDbContext dbContext)
-        : base(dbContext)
+    public DeleteCategoryByIdCommandHandler(IWithModificationsDbContext dbContext, ILogger<DeleteCategoryByIdCommandHandler> logger)
+        : base(dbContext, logger)
     {
     }
 

@@ -16,9 +16,9 @@ public sealed class DeleteCartItemByIdCommandHandler : BaseCommandHandler,
 
     public Task<bool> Handle(DeleteCartItemByIdCommand command, CancellationToken cancellationToken)
     {
-        var foundCartItem = DbContext.CartItemRepository.GetById(command.CartItemId, false)
+        var foundCartItem = DbContext.CartItemRepository.GetCartItem(command.CartId, command.ItemId, false)
                             ?? throw new DbRecordNotFoundException(
-                                $"Can not delete Cart Item. The passed cart_item_id={command.CartItemId} not found.");
+                                $"Can not delete Cart Item. The passed item_id={command.ItemId} not found.");
 
         bool deleted;
 
@@ -35,7 +35,7 @@ public sealed class DeleteCartItemByIdCommandHandler : BaseCommandHandler,
         if (!deleted)
         {
             throw new DbRecordNotFoundException(
-                $"Can not delete items from cart. Record with ID={command.CartItemId} not found.");
+                $"Can not delete items from cart. Record with ID={command.ItemId} not found.");
         }
 
         return Task.FromResult(true);

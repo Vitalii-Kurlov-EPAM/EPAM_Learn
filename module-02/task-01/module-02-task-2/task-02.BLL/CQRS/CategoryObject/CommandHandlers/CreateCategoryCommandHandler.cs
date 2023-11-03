@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.CategoryObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.DB.DatabaseContext;
@@ -11,8 +12,8 @@ namespace Module_02.Task_02.CatalogService.BLL.CQRS.CategoryObject.CommandHandle
 public sealed class CreateCategoryCommandHandler : BaseCommandHandler,
     IRequestHandler<CreateCategoryCommand, CategoryObjectModels.ItemModel>
 {
-    public CreateCategoryCommandHandler(IWithModificationsDbContext dbContext)
-        : base(dbContext)
+    public CreateCategoryCommandHandler(IWithModificationsDbContext dbContext, ILogger<CreateCategoryCommandHandler> logger)
+        : base(dbContext, logger)
     {
     }
 
