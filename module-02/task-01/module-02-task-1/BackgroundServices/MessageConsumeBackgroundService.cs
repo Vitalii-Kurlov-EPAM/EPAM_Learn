@@ -70,30 +70,44 @@ public class MessageConsumeBackgroundService : BackgroundService
         return _locker;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    private async Task ReconnectWatcher()
     {
-        _stoppingToken = stoppingToken;
-
-        using PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
-        using var locker = CreateLocker(true);
-
         try
         {
-            while (await timer.WaitForNextTickAsync(stoppingToken))
+            using var locker = CreateLocker(true);
+
+            if (_messageConsumer.StartListening())
+            {
+                locker.Reset();
+                locker.Wait(_stoppingToken);
+            }
+            
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
+
+
+            while (await timer.WaitForNextTickAsync(_stoppingToken))
             {
                 if (!_messageConsumer.StartListening())
                 {
                     continue;
                 }
-                
+
                 locker.Reset();
-                locker.Wait(stoppingToken);
+                locker.Wait(_stoppingToken);
             }
         }
         catch (OperationCanceledException)
         {
             //
         }
+
+
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        Task.Factory.StartNew(ReconnectWatcher, stoppingToken);
+        return Task.CompletedTask;
     }
 
     private void MessageConsumerOnDisconnected(object sender, EventArgs e)

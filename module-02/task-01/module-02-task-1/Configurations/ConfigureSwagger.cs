@@ -99,6 +99,42 @@ public static class SwaggerExtensions
             options.OperationFilter<SwaggerOperationFilter>();
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 
+            #region Keycloack Authentication
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.OpenIdConnect,
+                Name = "Authorization",
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                OpenIdConnectUrl = new Uri("http://localhost:8080/realms/epam-learn/.well-known/openid-configuration")
+
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+
+            #endregion
+
+
         });
     }
 
@@ -118,6 +154,16 @@ public static class SwaggerExtensions
             {
                 options.SwaggerEndpoint($"/api-docs/{description.GroupName}/docs.json", "API " + description.GroupName.ToUpperInvariant());
             }
+
+            #region KeyCloack settings
+
+            options.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
+            options.OAuthClientId("module-05");
+            options.OAuthRealm("epam-learn");
+            options.OAuthClientSecret("FPPXruzHDltuxbX3DQ5QcnwZnoKSu4Lm");
+            options.OAuthAppName("Swagger");
+
+            #endregion
         });
 
         return app;

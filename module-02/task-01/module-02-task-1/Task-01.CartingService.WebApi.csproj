@@ -11,6 +11,9 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="IdentityModel" Version="5.2.0" />
+    <PackageReference Include="Keycloak.AuthServices.Authentication" Version="1.6.0" />
+    <PackageReference Include="Keycloak.AuthServices.Authorization" Version="1.6.0" />
     <PackageReference Include="LiteDB" Version="5.0.17" />
     <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -26,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Layers\DAL\Consts\" />
-    <Folder Include="Static\" />
   </ItemGroup>
 
   <ItemGroup>

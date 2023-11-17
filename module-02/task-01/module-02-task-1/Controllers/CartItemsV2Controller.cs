@@ -1,8 +1,10 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.CQRS.CartItemObject.Queries;
 using Module_02.Task_01.CartingService.WebApi.MappingExtensions;
 using Module_02.Task_01.CartingService.WebApi.Models.CartItem;
+using Module_02.Task_01.CartingService.WebApi.Static;
 
 namespace Module_02.Task_01.CartingService.WebApi.Controllers
 {
@@ -15,6 +17,7 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
         [HttpGet("{cartId}/items")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartItemResponse.ItemDto[]))]
         [MapToApiVersion(2.0)]
+        [Authorize(Policy = PolicyName.CARTS_READ)]
         public async Task<IActionResult> GetAllV2(string cartId)
         {
             var allCartItems = await _mediator.Send(new GetAllCartItemsQuery(cartId, true));

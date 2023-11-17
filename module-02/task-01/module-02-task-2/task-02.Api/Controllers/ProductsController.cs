@@ -1,10 +1,13 @@
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Commands;
 using Module_02.Task_02.CatalogService.Abstractions.CQRS.ProductObject.Queries;
 using Module_02.Task_02.CatalogService.WebApi.MappingExtensions;
 using Module_02.Task_02.CatalogService.WebApi.Models;
 using Module_02.Task_02.CatalogService.WebApi.Models.Product;
+using Module_02.Task_02.CatalogService.WebApi.Static;
 
 namespace Module_02.Task_02.CatalogService.WebApi.Controllers;
 
@@ -16,16 +19,22 @@ namespace Module_02.Task_02.CatalogService.WebApi.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private IAuthenticationService auth;
 
-    public ProductsController(IMediator mediator)
+    public ProductsController(IMediator mediator, IAuthenticationService auth)
     {
         _mediator = mediator;
+        this.auth = auth;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ProductResponse.ItemDto>))]
+    [Authorize(Policy = PolicyName.PRODUCTS_READ)]
     public async Task<IActionResult> GetAll()
     {
+        var t = await HttpContext.GetTokenAsync("refresh_token");
+        var hhh = await auth.AuthenticateAsync(HttpContext, null);
+
         var allProducts = await _mediator.Send(new GetAllProductsQuery{IncludeDeps = true});
 
         return Ok(allProducts.Select(model => model.ToProductResponseItemDto()));
@@ -34,6 +43,7 @@ public class ProductsController : ControllerBase
     [HttpGet("{productId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ProductResponse.ItemDto>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = PolicyName.PRODUCTS_READ)]
     public async Task<IActionResult> GetById(int productId)
     {
         var foundProduct = await _mediator.Send(new GetProductByIdQuery(productId, true));
@@ -46,6 +56,7 @@ public class ProductsController : ControllerBase
     [HttpGet("categories/{categoryId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductResponse.PagedDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = PolicyName.PRODUCTS_READ)]
     public async Task<IActionResult> GetAllByCategoryId(int categoryId)
     {
         var foundProducts = await _mediator.Send(new GetProductsByCategoryIdQuery(categoryId, 1, 3, true));
@@ -57,6 +68,7 @@ public class ProductsController : ControllerBase
     [HttpDelete("{productId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = PolicyName.PRODUCTS_DELETE)]
     public async Task<IActionResult> DeleteById(int productId, [FromQuery] int amount)
     {
         var result = await _mediator.Send(new DeleteProductByIdCommand(productId, amount));
@@ -68,6 +80,7 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ProductResponse.CreatedDto))]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [Authorize(Policy = PolicyName.PRODUCTS_CREATE)]
     public async Task<IActionResult> Create(ProductRequest.CreateModel model)
     {
         var product = await _mediator.Send(model.ToCreateProductCommand());
@@ -84,6 +97,7 @@ public class ProductsController : ControllerBase
     [HttpPut("{productId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = PolicyName.PRODUCTS_UPDATE)]
     public async Task<IActionResult> Update(int productId, ProductRequest.UpdateModel model)
     {
         var result = await _mediator.Send(model.ToUpdateProductCommand(productId));

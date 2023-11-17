@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.CQRS.CartItemObject.Commands;
 using Module_02.Task_01.CartingService.WebApi.Layers.Abstractions.CQRS.CartItemObject.Queries;
 using Module_02.Task_01.CartingService.WebApi.MappingExtensions;
 using Module_02.Task_01.CartingService.WebApi.Models;
 using Module_02.Task_01.CartingService.WebApi.Models.CartItem;
+using Module_02.Task_01.CartingService.WebApi.Static;
 
 namespace Module_02.Task_01.CartingService.WebApi.Controllers
 {
@@ -33,6 +35,7 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
         [HttpGet("{cartId}/items")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartItemResponse.CartItemsDto))]
         [MapToApiVersion(1.0)]
+        [Authorize(Policy = PolicyName.CARTS_READ)]
         public async Task<IActionResult> GetAll(string cartId)
         {
             var allCartItems = await _mediator.Send(new GetAllCartItemsQuery(cartId, true));
@@ -42,6 +45,7 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
         [HttpGet("{cartId}/items/{itemId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartItemResponse.ItemDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModelResponse))]
+        [Authorize(Policy = PolicyName.CARTS_READ)]
         public async Task<IActionResult> GetById(string cartId, int itemId)
         {
             var cartItem = await _mediator.Send(new GetCartItemByIdQuery(cartId, itemId, true));
@@ -54,6 +58,7 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModelResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModelResponse))]
+        [Authorize(Policy = PolicyName.CARTS_CREATE)]
         public async Task<IActionResult> Create(string cartId, CartItemRequest.CreateModel model)
         {
             var cartItem = await _mediator.Send(model.ToCreateCartItemCommand(cartId));
@@ -63,6 +68,7 @@ namespace Module_02.Task_01.CartingService.WebApi.Controllers
         [HttpDelete("{cartId}/items/{itemId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModelResponse))]
+        [Authorize(Policy = PolicyName.CARTS_DELETE)]
         public async Task<IActionResult> Delete(string cartId, int itemId, [FromQuery, Required]int quantity)
         {
             var result = await _mediator.Send(new DeleteCartItemByIdCommand(cartId, itemId, quantity));
